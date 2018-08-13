@@ -1,0 +1,17 @@
+---
+# Define users to be added to the server
+# - name: newuser
+#   state: present|absent
+#   groups: [sudo, docker]
+#   ssh:
+#     state: present|absent
+#     key: "{{ lookup('file', 'files/newuser.pub') }}"
+
+users:
+  - name: kseifert
+    password: $6$cke78hmClkIzPZO$MG/HMvyIX8c0IM8Qj2SZqyDe.lVUsgOm54geVpjd9kertcuUNfWR9T5OsQD3MlIOZGkxUac72ojokEVVLWfFF/
+    groups:
+      - sudo
+      - docker
+    ssh:
+      key: "{{ lookup('file', 'files/public_keys/kseifert.pub') }}"

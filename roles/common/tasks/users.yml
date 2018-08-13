@@ -1,0 +1,26 @@
+---
+- name: set user groups
+  group:
+    name: "{{item}}"
+    state: present
+  # extract all the unique groups from the list of users
+  with_items: "{{ users | selectattr('groups', 'defined') | map(attribute='groups') | list | unique }}"
+
+- name: set users
+  user:
+    name: "{{item.name}}"
+    shell: "{{item.shell | default('/bin/bash')}}"
+    password: "{{item.password | default(omit)}}"
+    update_password: on_create
+    groups: "{{item.groups | default('')}}"
+    state: "{{item.state | default('present')}}"
+  with_items: "{{users}}"
+
+- name: set user authorized keys
+  authorized_key:
+    user: "{{item.name}}"
+    key: "{{item.ssh.key}} | default('')"
+    state: "{{item.ssh.state | default('present')}}"
+  with_items: "{{users}}"
+  # only set authorized keys on users that should exist
+  when: (item.state | default('present')) == 'present' and item.ssh.key is defined
